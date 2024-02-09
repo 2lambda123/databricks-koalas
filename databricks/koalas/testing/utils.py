@@ -112,17 +112,30 @@ class SQLTestUtils(object):
 class ReusedSQLTestCase(unittest.TestCase, SQLTestUtils):
     @classmethod
     def setUpClass(cls):
+        """This function sets up a Spark session and enables the use of Apache Arrow for faster data processing.
+        Parameters:
+            - cls (class): The class to set up the Spark session for.
+        Returns:
+            - None: This function does not return anything.
+        Processing Logic:
+            - Sets up a Spark session.
+            - Enables Apache Arrow for faster processing."""
+        
         cls.spark = default_session()
         cls.spark.conf.set(SPARK_CONF_ARROW_ENABLED, True)
 
     @classmethod
     def tearDownClass(cls):
+        """"""
+        
         # We don't stop Spark session to reuse across all tests.
         # The Spark session will be started and stopped at PyTest session level.
         # Please see databricks/koalas/conftest.py.
         pass
 
     def assertPandasEqual(self, left, right, check_exact=True):
+        """"""
+        
         if isinstance(left, pd.DataFrame) and isinstance(right, pd.DataFrame):
             try:
                 if LooseVersion(pd.__version__) >= LooseVersion("1.1"):
@@ -268,6 +281,8 @@ class ReusedSQLTestCase(unittest.TestCase, SQLTestUtils):
 
     @staticmethod
     def _to_pandas(obj):
+        """"""
+        
         if isinstance(obj, (DataFrame, Series, Index)):
             return obj.to_pandas()
         else:
@@ -277,6 +292,8 @@ class ReusedSQLTestCase(unittest.TestCase, SQLTestUtils):
 class TestUtils(object):
     @contextmanager
     def temp_dir(self):
+        """"""
+        
         tmp = tempfile.mkdtemp()
         try:
             yield tmp
@@ -285,6 +302,8 @@ class TestUtils(object):
 
     @contextmanager
     def temp_file(self):
+        """"""
+        
         with self.temp_dir() as tmp:
             yield tempfile.mkstemp(dir=tmp)
 
@@ -292,14 +311,20 @@ class TestUtils(object):
 class ComparisonTestBase(ReusedSQLTestCase):
     @property
     def kdf(self):
+        """"""
+        
         return ks.from_pandas(self.pdf)
 
     @property
     def pdf(self):
+        """"""
+        
         return self.kdf.to_pandas()
 
 
 def compare_both(f=None, almost=True):
+    """"""
+    
 
     if f is None:
         return functools.partial(compare_both, almost=almost)
